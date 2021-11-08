@@ -1,9 +1,6 @@
-import path from "node:path";
 import { promises as fs } from "node:fs";
-
-import execa from "execa";
 import { preprocess as parse, traverse } from "@glimmer/syntax";
-
+import { getSvgJarFilePaths } from "./file-search.js";
 import {
   isSvgJarHelper,
   isStaticSvgLookup,
@@ -13,30 +10,7 @@ import {
 
 const [_nodePath, _executablePath, pathToSearch = "./"] = process.argv;
 
-// Resolve the "path" argument against the current directory to support relative arguments
-const fullPath = path.resolve(process.cwd(), pathToSearch);
-
-const { stdout } = await execa(
-  "rg",
-  [
-    // Only locate the names of files that contain the pattern
-    "-l",
-    // Search for the exact text "svg-jar"
-    "-F",
-    "svg-jar",
-    // Only search handlebars files
-    "-thbs",
-    // For some reason, this is required to avoid RipGrep hanging
-    ".",
-  ],
-  { cwd: fullPath }
-);
-
-const relativeFilesWithMatch = stdout.split("\n");
-
-const absoluteFilesWithMatch = relativeFilesWithMatch.map((relative) =>
-  path.resolve(process.cwd(), relative)
-);
+const absoluteFilesWithMatch = await getSvgJarFilePaths(pathToSearch);
 
 const identifiers = new Set();
 
