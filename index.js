@@ -1,5 +1,6 @@
 import { promises as fs } from "node:fs";
 import { preprocess as parse, traverse } from "@glimmer/syntax";
+import { args } from "./args.js";
 import { getSvgJarFilePaths } from "./file-search.js";
 import {
   isSvgJarHelper,
@@ -8,10 +9,8 @@ import {
   getDynamicSvgIdentifier,
 } from "./glimmer-helpers.js";
 
-const [_nodePath, _executablePath, pathToSearch = "./"] = process.argv;
-
-const absoluteFilesWithMatch = await getSvgJarFilePaths(pathToSearch);
-
+const { path } = args;
+const absoluteFilesWithMatch = await getSvgJarFilePaths(path);
 const identifiers = new Set();
 
 await Promise.all(

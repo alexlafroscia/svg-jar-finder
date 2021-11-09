@@ -26,6 +26,6 @@ export async function getSvgJarFilePaths(pathToSearch) {
     // Probably failed due to no matches
     // TODO: there's probably a ripgrep option to avoid a non-0 exit code when we have no matches. That would be a
     // better approach than this
-    return [];
+    throw e;
   }
 }
