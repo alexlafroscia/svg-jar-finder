@@ -9,9 +9,9 @@ import {
   getStaticSvgIdentifier,
   getDynamicSvgIdentifier,
 } from "./glimmer-helpers.js";
-import { printHuman, printJSON } from "./printer.js";
+import { print } from "./printer.js";
 
-const { path: pathToSearch, json } = args;
+const { path: pathToSearch } = args;
 const absoluteFilesWithMatch = await getSvgJarFilePaths(pathToSearch);
 const filesWithIdentifiers = new Map();
 
@@ -43,9 +43,5 @@ await Promise.all(
 
 // Print each identifier passed to `svg-jar`
 for (const [path, identifiers] of filesWithIdentifiers.entries()) {
-  if (json) {
-    printJSON(path, identifiers);
-  } else {
-    printHuman(path, identifiers);
-  }
+  print(path, identifiers, args);
 }
