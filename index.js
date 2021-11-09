@@ -1,3 +1,4 @@
+import path from "node:path";
 import { promises as fs } from "node:fs";
 import { preprocess as parse, traverse } from "@glimmer/syntax";
 import { args } from "./args.js";
@@ -8,13 +9,15 @@ import {
   getStaticSvgIdentifier,
   getDynamicSvgIdentifier,
 } from "./glimmer-helpers.js";
+import { printHuman, printJSON } from "./printer.js";
 
-const { path } = args;
-const absoluteFilesWithMatch = await getSvgJarFilePaths(path);
-const identifiers = new Set();
+const { path: pathToSearch, json } = args;
+const absoluteFilesWithMatch = await getSvgJarFilePaths(pathToSearch);
+const filesWithIdentifiers = new Map();
 
 await Promise.all(
   absoluteFilesWithMatch.map(async function (fileName) {
+    const identifiers = [];
     const ast = parse((await fs.readFile(fileName)).toString());
 
     traverse(ast, {
@@ -25,15 +28,24 @@ await Promise.all(
               ? `"${getStaticSvgIdentifier(node)}"`
               : getDynamicSvgIdentifier(node);
 
-            identifiers.add(identifier);
+            identifiers.push(identifier);
           }
         },
       },
     });
+
+    filesWithIdentifiers.set(
+      path.relative(pathToSearch, fileName),
+      identifiers
+    );
   })
 );
 
 // Print each identifier passed to `svg-jar`
-for (const identifier of identifiers) {
-  console.log(identifier);
+for (const [path, identifiers] of filesWithIdentifiers.entries()) {
+  if (json) {
+    printJSON(path, identifiers);
+  } else {
+    printHuman(path, identifiers);
+  }
 }

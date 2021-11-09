@@ -7,4 +7,9 @@ export const args = yargs(hideBin(process.argv))
     describe: "path to the app to search",
     default: "./",
   })
+  .option("json", {
+    describe: "print results as JSON",
+    default: false,
+    type: "boolean",
+  })
   .help().argv;
