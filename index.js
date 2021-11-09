@@ -25,7 +25,7 @@ await Promise.all(
         enter(node) {
           if (isSvgJarHelper(node)) {
             const identifier = isStaticSvgLookup(node)
-              ? `"${getStaticSvgIdentifier(node)}"`
+              ? `'${getStaticSvgIdentifier(node)}'`
               : getDynamicSvgIdentifier(node);
 
             identifiers.push(identifier);
